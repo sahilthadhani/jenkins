@@ -1,13 +1,9 @@
 pipeline {
 	agent any
-	parameters {
-  string(name: 'Greeting', defaultValue: 'Hello', description: 'How should I
-greet the world?')
-  }
 	stages {
 		stage('Build') {
 			steps {
-				echo 'Building.. ${param.Greeting} World!'
+				echo 'Building..'
 			}
 		}
 		stage('Test') {
@@ -16,14 +12,9 @@ greet the world?')
 			}
 		}
 		stage('Deploy') {
-			try {
-				steps {
-					echo 'Deploying....'
-				}
-			} finally {
-				echo 'finally....'
+			steps {
+				echo 'Deploying....'
 			}
-			
 		}
 	}
 }
