@@ -20,11 +20,6 @@ greet the world?')
 				steps {
 				echo 'Deploying....'
 				}
-				post {
-					always {
-						junit '**/target/*.xml'
-					}
-				}
 			} finally {
 				//something.
 			}
