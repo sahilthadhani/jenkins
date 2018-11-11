@@ -18,10 +18,10 @@ greet the world?')
 		stage('Deploy') {
 			try {
 				steps {
-				echo 'Deploying....'
+					echo 'Deploying....'
 				}
 			} finally {
-				//something.
+				echo 'finally....'
 			}
 			
 		}
