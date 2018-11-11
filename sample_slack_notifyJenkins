@@ -1,0 +1,46 @@
+// Sample file to do slack notification in jenkins.
+import groovy.json.JsonOutput
+
+pipeline {
+    agent {
+            label 'java-base'
+    }
+    stages {
+        stage('Unit, Functional and Build') {
+            steps {
+                sh "make build"
+                stash name: 'lambda', includes: '*/*.jar'
+                archiveArtifacts artifacts: '*/jacoco/test/html/**/*'
+            }
+        }
+
+        stage('Publish') {
+            steps {
+                sh "make publish-artifact"
+            }
+        }
+    }
+
+    post {
+        success {
+            slackNotify("#ci", true, "Jenkins build ${env.BUILD_NUMBER} pipeline passed <${env.BUILD_URL}console|Jenkins console log>")
+        }
+        failure {
+            slackNotify("#ci", false, "Jenkins build ${env.BUILD_NUMBER} pipeline FAILED <${env.BUILD_URL}console|Jenkins console log>")
+        }
+    }
+}
+
+def slackNotify(channel, success, text) {
+    def color = (success) ? "#25E439" : "#E02525"
+    def slackURL = 'https://hooks.slack.com/services/xxxxx/xxxxx/xxxxx'
+    def payload = JsonOutput.toJson([channel    : channel,
+                                     username   : "${env.JOB_NAME}",
+                                     icon_emoji : ":jenkins:",
+                                     attachments: [[
+                                                           color: color,
+                                                           text : text
+                                                   ]]
+    ])
+    sh "curl --silent -X POST --data-urlencode \'payload=${payload}\' ${slackURL}"
+}

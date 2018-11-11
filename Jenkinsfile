@@ -1,9 +1,13 @@
 pipeline {
 	agent any
+	parameters {
+  string(name: 'Greeting', defaultValue: 'Hello', description: 'How should I
+greet the world?')
+  }
 	stages {
 		stage('Build') {
 			steps {
-				echo 'Building..'
+				echo 'Building.. ${param.Greeting} World!'
 			}
 		}
 		stage('Test') {
@@ -12,21 +16,19 @@ pipeline {
 			}
 		}
 		stage('Deploy') {
-			steps {
+			try {
+				steps {
 				echo 'Deploying....'
+				}
+				post {
+					always {
+						junit '**/target/*.xml'
+					}
+				}
+			} finally {
+				//something.
 			}
+			
 		}
-	}
-}
-// Script //
-node {
-	stage('Build') {
-		echo 'Building....'
-	}
-	stage('Test') {
-		echo 'Building....'
-	}
-	stage('Deploy') {
-		echo 'Deploying....'
 	}
 }
